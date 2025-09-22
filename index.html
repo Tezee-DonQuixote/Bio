@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tezee - Portfolio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .selectable {
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px;
+            background: #000;
+        }
+
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            display: none;
+        }
+
+        .video-background.active {
+            display: block;
+        }
+
+        .video-background video {
+            min-width: 100%;
+            min-height: 100%;
+            object-fit: cover;
+            filter: brightness(0.7);
+        }
+
+        .container {
+            position: relative;
+            width: 380px;
+            height: 480px;
+            transition: transform 0.1s;
+            display: none;
+        }
+
+        .container.active {
+            display: block;
+        }
+
+        .profile-card {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(15px);
+            border-radius: 15px;
+            padding: 35px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(255, 0, 0, 0.3);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 0, 0, 0.1), transparent);
+            transform: rotate(45deg);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: rotate(45deg) translateX(-100%); }
+            100% { transform: rotate(45deg) translateX(100%); }
+        }
+
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 auto 25px;
+            border: 2px solid rgba(255, 0, 0, 0.5);
+            object-fit: cover;
+        }
+
+        .main-name {
+            font-size: 2.2em;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 8px;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
+        }
+
+        .original-name {
+            font-size: 1.1em;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 25px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .site-link {
+            display: inline-block;
+            padding: 10px 25px;
+            background: rgba(255, 0, 0, 0.3);
+            color: white;
+            text-decoration: none;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 0, 0, 0.5);
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .site-link:hover {
+            background: rgba(255, 0, 0, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.4);
+        }
+
+        .decoration-line {
+            width: 60%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 0, 0, 0.5), transparent);
+            margin: 20px auto;
+        }
+
+        /* Дисклеймер */
+        .disclaimer {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 0, 0, 0.5);
+            text-align: center;
+            z-index: 2000;
+            backdrop-filter: blur(10px);
+            animation: fadeOut 2s ease-in-out 2s forwards;
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            100% { opacity: 0; display: none; }
+        }
+
+        /* Кнопка Gallop On - КАК КНОПКА ЗВУКА */
+        .gallop-btn {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: rgba(255, 0, 0, 0.3);
+            border: 1px solid rgba(255, 0, 0, 0.5);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 20px;
+            font-size: 1.3em;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1500;
+            transition: all 0.5s ease;
+            box-shadow: 0 5px 20px rgba(255, 0, 0, 0.3);
+            animation: gallopPulse 2s infinite;
+        }
+
+        .gallop-btn.visible {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .gallop-btn:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+            background: rgba(255, 0, 0, 0.5);
+            box-shadow: 0 8px 25px rgba(255, 0, 0, 0.5);
+        }
+
+        @keyframes gallopPulse {
+            0% { box-shadow: 0 5px 20px rgba(255, 0, 0, 0.3); }
+            50% { box-shadow: 0 8px 25px rgba(255, 0, 0, 0.5); }
+            100% { box-shadow: 0 5px 20px rgba(255, 0, 0, 0.3); }
+        }
+
+        /* Кнопка и микшер звука */
+        .sound-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            display: none;
+        }
+
+        .sound-controls.active {
+            display: block;
+        }
+
+        .sound-btn {
+            background: rgba(255, 0, 0, 0.3);
+            border: 1px solid rgba(255, 0, 0, 0.5);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        .sound-btn:hover {
+            background: rgba(255, 0, 0, 0.5);
+        }
+
+        .sound-btn.muted {
+            background: rgba(128, 128, 128, 0.3);
+            border-color: rgba(128, 128, 128, 0.5);
+        }
+
+        .volume-mixer {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            display: none;
+            min-width: 150px;
+        }
+
+        .sound-controls:hover .volume-mixer {
+            display: block;
+        }
+
+        .volume-slider {
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        .volume-value {
+            color: white;
+            font-size: 0.8em;
+            text-align: center;
+        }
+
+        /* Лоадер */
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s;
+            color: white;
+            font-size: 1.2em;
+        }
+
+        .loader.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                width: 90%;
+                height: auto;
+                min-height: 500px;
+                margin: 20px;
+            }
+            
+            .profile-card {
+                padding: 25px;
+            }
+            
+            .main-name {
+                font-size: 1.8em;
+            }
+            
+            .sound-controls {
+                top: 10px;
+                right: 10px;
+            }
+            
+            .disclaimer {
+                width: 90%;
+                margin: 0 auto;
+                padding: 15px 20px;
+                font-size: 0.9em;
+            }
+            
+            .gallop-btn {
+                padding: 12px 25px;
+                font-size: 1.2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Дисклеймер на 2 секунды -->
+    <div class="disclaimer" id="disclaimer">
+        Сайт был создан по приколу по этому могут быть недочёты.
+    </div>
+
+    <!-- Кнопка Gallop On -->
+    <button class="gallop-btn" id="gallopBtn">Gallop On</button>
+
+    <!-- Управление звуком -->
+    <div class="sound-controls" id="soundControls">
+        <div class="sound-btn" id="soundBtn">🔊 Звук вкл</div>
+        <div class="volume-mixer">
+            <div class="volume-value">Громкость: <span id="volumeValue">60%</span></div>
+            <input type="range" min="0" max="100" value="60" class="volume-slider" id="volumeSlider">
+        </div>
+    </div>
+
+    <!-- Лоадер -->
+    <div class="loader" id="loader">
+        Загрузка Tezee Portfolio...
+    </div>
+
+    <!-- ВИДЕО -->
+    <div class="video-background" id="videoBackground">
+        <video muted loop id="bgVideo">
+            <source src="https://files.catbox.moe/rvkv8u.mp4" type="video/mp4">
+            Ваш браузер не поддерживает видео.
+        </video>
+    </div>
+
+    <!-- Основной контент -->
+    <div class="container" id="interactiveCard">
+        <div class="profile-card">
+            <img src="https://i.ibb.co/jZvZyfyQ/photo-2025-01-14-20-43-36.jpg" alt="Tezee Avatar" class="avatar">
+            <h1 class="main-name selectable">⚫Tezee🔴</h1>
+            <div class="decoration-line"></div>
+            <p class="original-name selectable">tezee_its_me</p>
+            <a href="#" class="site-link">Tezee Portfolio</a>
+        </div>
+    </div>
+
+    <script>
+        // Элементы управления
+        const video = document.getElementById('bgVideo');
+        const soundBtn = document.getElementById('soundBtn');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const volumeValue = document.getElementById('volumeValue');
+        const disclaimer = document.getElementById('disclaimer');
+        const gallopBtn = document.getElementById('gallopBtn');
+        const soundControls = document.getElementById('soundControls');
+        const loader = document.getElementById('loader');
+        const videoBackground = document.getElementById('videoBackground');
+        const interactiveCard = document.getElementById('interactiveCard');
+
+        // Настройки звука по умолчанию
+        let isSoundEnabled = true;
+        let volume = 0.6; // 60% громкости
+
+        // Функция запуска сайта
+        function startWebsite() {
+            // Скрываем кнопку Gallop On с анимацией
+            gallopBtn.style.transform = 'translate(-50%, -50%) scale(0)';
+            gallopBtn.style.opacity = '0';
+            
+            // Показываем видео фон и контент
+            setTimeout(() => {
+                videoBackground.classList.add('active');
+                interactiveCard.classList.add('active');
+                soundControls.classList.add('active');
+                
+                // Запускаем видео
+                video.play().then(() => {
+                    console.log('Видео запущено успешно');
+                    
+                    // Включаем звук через небольшую задержку
+                    setTimeout(() => {
+                        video.muted = false;
+                        video.volume = volume;
+                        updateVolumeDisplay();
+                    }, 100);
+                    
+                }).catch(error => {
+                    console.log('Ошибка запуска видео:', error);
+                });
+                
+            }, 500);
+        }
+
+        // Обработчик клика по кнопке Gallop On
+        gallopBtn.addEventListener('click', startWebsite);
+
+        // Обновление отображения громкости
+        function updateVolumeDisplay() {
+            volumeValue.textContent = Math.round(volume * 100) + '%';
+            volumeSlider.value = volume * 100;
+        }
+
+        // Функция выключения звука
+        function disableSound() {
+            video.muted = true;
+            isSoundEnabled = false;
+            soundBtn.textContent = '🔇 Звук выкл';
+            soundBtn.classList.add('muted');
+        }
+
+        // Функция включения звука
+        function enableSound() {
+            video.muted = false;
+            isSoundEnabled = true;
+            soundBtn.textContent = '🔊 Звук вкл';
+            soundBtn.classList.remove('muted');
+        }
+
+        // Обработчик клика по кнопке звука
+        soundBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (isSoundEnabled) {
+                disableSound();
+            } else {
+                enableSound();
+            }
+        });
+
+        // Обработчик изменения громкости
+        volumeSlider.addEventListener('input', function() {
+            volume = volumeSlider.value / 100;
+            video.volume = volume;
+            updateVolumeDisplay();
+        });
+
+        // Обеспечиваем повторение видео после окончания
+        video.addEventListener('ended', function() {
+            video.currentTime = 0;
+            video.play();
+        });
+
+        // Ждем загрузки всей страницы
+        window.addEventListener('load', function() {
+            // Скрываем лоадер
+            setTimeout(() => {
+                loader.classList.add('hidden');
+            }, 1000);
+            
+            // Скрываем дисклеймер через 2 секунды и показываем кнопку Gallop On
+            setTimeout(() => {
+                disclaimer.style.display = 'none';
+                gallopBtn.classList.add('visible');
+            }, 2000);
+            
+            // Предзагрузка видео
+            video.load();
+        });
+
+        // Эффект наклона при движении мыши
+        const card = document.getElementById('interactiveCard');
+        
+        document.addEventListener('mousemove', (e) => {
+            if (interactiveCard.classList.contains('active')) {
+                const xAxis = (e.pageX - window.innerWidth / 2) / 20;
+                const yAxis = (e.pageY - window.innerHeight / 2) / 20;
+                card.style.transform = `rotateY(${xAxis}deg) rotateX(${-yAxis}deg) scale(1.05)`;
+            }
+        });
+
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'rotateY(0deg) rotateX(0deg) scale(1)';
+            card.style.transition = 'transform 0.5s ease';
+            setTimeout(() => {
+                card.style.transition = 'transform 0.1s';
+            }, 500);
+        });
+
+        card.addEventListener('mouseenter', () => {
+            card.style.transition = 'none';
+        });
+
+        console.log('🚀 Сайт готов!');
+    </script>
+</body>
+</html>
