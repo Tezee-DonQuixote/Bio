@@ -57,8 +57,8 @@
 
         .container {
             position: relative;
-            width: 380px;
-            height: 480px;
+            width: 420px; /* Увеличил ширину */
+            height: 580px; /* Увеличил высоту */
             transition: transform 0.1s;
             display: none;
         }
@@ -71,7 +71,7 @@
             background: rgba(0, 0, 0, 0.6);
             backdrop-filter: blur(15px);
             border-radius: 15px;
-            padding: 35px;
+            padding: 40px; /* Увеличил отступы */
             text-align: center;
             box-shadow: 0 10px 40px rgba(255, 0, 0, 0.3);
             border: 1px solid rgba(255, 0, 0, 0.3);
@@ -122,11 +122,142 @@
             color: rgba(255, 255, 255, 0.7);
             margin-bottom: 25px;
             font-family: 'Courier New', monospace;
+            transition: all 0.3s ease;
+        }
+
+        .original-name.hidden {
+            opacity: 0;
+            height: 0;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .social-buttons {
+            display: none;
+            gap: 20px; /* Увеличил расстояние между кнопками */
+            margin-bottom: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+            position: relative;
+        }
+
+        .social-buttons.active {
+            display: flex;
+        }
+
+        .social-buttons.single-mode {
+            gap: 0;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .social-btn {
+            width: 70px; /* Увеличил кнопки */
+            height: 70px;
+            background: rgba(255, 0, 0, 0.3);
+            border: 1px solid rgba(255, 0, 0, 0.5);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.5s ease;
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .social-btn img {
+            width: 75%; /* Увеличил иконки */
+            height: 75%;
+            object-fit: contain;
+            filter: brightness(0) invert(1);
+            transition: all 0.3s ease;
+        }
+
+        .social-btn:hover {
+            background: rgba(255, 0, 0, 0.5);
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.4);
+        }
+
+        .social-btn:hover img {
+            transform: scale(1.1);
+            filter: brightness(0) invert(1) drop-shadow(0 0 3px rgba(255, 255, 255, 0.5));
+        }
+
+        /* Анимации для single-mode */
+        .social-btn.fade-out {
+            opacity: 0;
+            transform: scale(0.5);
+            width: 0;
+            margin: 0;
+        }
+
+        .social-btn.center-mode {
+            transform: scale(1.3); /* Увеличил масштаб центральной кнопки */
+            z-index: 10;
+            position: relative;
+        }
+
+        /* Прямоугольник с ссылками */
+        .links-container {
+            display: none;
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid rgba(255, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 25px; /* Увеличил отступы */
+            margin-top: 25px;
+            backdrop-filter: blur(10px);
+            animation: slideUp 0.5s ease;
+            min-height: 120px; /* Минимальная высота */
+        }
+
+        .links-container.active {
+            display: block;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .link-item {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 15px; /* Увеличил отступы */
+            margin: 10px 0; /* Увеличил расстояние между ссылками */
+            color: white;
+            text-decoration: none;
+            display: block;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em; /* Увеличил шрифт */
+        }
+
+        .link-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+        }
+
+        .link-item.copied {
+            background: rgba(0, 255, 0, 0.2);
+            border-color: rgba(0, 255, 0, 0.5);
         }
 
         .site-link {
             display: inline-block;
-            padding: 10px 25px;
+            padding: 12px 30px; /* Увеличил кнопку */
             background: rgba(255, 0, 0, 0.3);
             color: white;
             text-decoration: none;
@@ -134,15 +265,25 @@
             transition: all 0.3s ease;
             border: 1px solid rgba(255, 0, 0, 0.5);
             font-family: 'Courier New', monospace;
-            font-size: 0.9em;
+            font-size: 0.95em; /* Увеличил шрифт */
             position: relative;
             overflow: hidden;
+            cursor: pointer;
+            margin-top: 10px;
         }
 
         .site-link:hover {
             background: rgba(255, 0, 0, 0.5);
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(255, 0, 0, 0.4);
+        }
+
+        .site-link.hidden {
+            opacity: 0;
+            height: 0;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
         }
 
         .decoration-line {
@@ -174,7 +315,7 @@
             100% { opacity: 0; display: none; }
         }
 
-        /* Кнопка Gallop On - КАК КНОПКА ЗВУКА */
+        /* Кнопка Gallop On */
         .gallop-btn {
             position: fixed;
             top: 50%;
@@ -272,7 +413,6 @@
             text-align: center;
         }
 
-        /* Лоадер */
         .loader {
             position: fixed;
             top: 0;
@@ -296,18 +436,18 @@
 
         @media (max-width: 768px) {
             .container {
-                width: 90%;
+                width: 95%;
                 height: auto;
-                min-height: 500px;
+                min-height: 550px;
                 margin: 20px;
             }
             
             .profile-card {
-                padding: 25px;
+                padding: 30px;
             }
             
             .main-name {
-                font-size: 1.8em;
+                font-size: 2em;
             }
             
             .sound-controls {
@@ -326,19 +466,36 @@
                 padding: 12px 25px;
                 font-size: 1.2em;
             }
+            
+            .social-btn {
+                width: 65px;
+                height: 65px;
+            }
+            
+            .social-btn img {
+                width: 70%;
+                height: 70%;
+            }
+            
+            .links-container {
+                padding: 20px;
+                min-height: 110px;
+            }
+            
+            .link-item {
+                padding: 12px;
+                font-size: 0.9em;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Дисклеймер на 2 секунды -->
     <div class="disclaimer" id="disclaimer">
         Сайт был создан по приколу по этому могут быть недочёты.
     </div>
 
-    <!-- Кнопка Gallop On -->
     <button class="gallop-btn" id="gallopBtn">Gallop On</button>
 
-    <!-- Управление звуком -->
     <div class="sound-controls" id="soundControls">
         <div class="sound-btn" id="soundBtn">🔊 Звук вкл</div>
         <div class="volume-mixer">
@@ -347,12 +504,10 @@
         </div>
     </div>
 
-    <!-- Лоадер -->
     <div class="loader" id="loader">
         Загрузка Tezee Portfolio...
     </div>
 
-    <!-- ВИДЕО -->
     <div class="video-background" id="videoBackground">
         <video muted loop id="bgVideo">
             <source src="https://files.catbox.moe/rvkv8u.mp4" type="video/mp4">
@@ -360,19 +515,39 @@
         </video>
     </div>
 
-    <!-- Основной контент -->
     <div class="container" id="interactiveCard">
         <div class="profile-card">
             <img src="https://i.ibb.co/jZvZyfyQ/photo-2025-01-14-20-43-36.jpg" alt="Tezee Avatar" class="avatar">
             <h1 class="main-name selectable">⚫Tezee🔴</h1>
             <div class="decoration-line"></div>
-            <p class="original-name selectable">tezee_its_me</p>
-            <a href="#" class="site-link">Tezee Portfolio</a>
+            <p class="original-name selectable" id="originalName">tezee_its_me</p>
+            
+            <!-- Социальные кнопки -->
+            <div class="social-buttons" id="socialButtons">
+                <a class="social-btn" id="socialBtn1" data-type="telegram">
+                    <img src="https://i.ibb.co/YBBpDm6R/photo-2025-01-14-20-43-36.jpg" alt="Telegram">
+                </a>
+                <a class="social-btn" id="socialBtn2" data-type="discord">
+                    <img src="https://i.ibb.co/ZzWRFfGJ/photo-2025-01-14-20-43-36.jpg" alt="Discord">
+                </a>
+                <a class="social-btn" id="socialBtn3" data-type="github">
+                    <img src="https://i.ibb.co/N2VcGLFQ/photo-2025-01-14-20-43-36.jpg" alt="GitHub">
+                </a>
+            </div>
+
+            <!-- Контейнер для ссылок -->
+            <div class="links-container" id="linksContainer">
+                <div class="link-item" data-link="https://t.me/tezee">Telegram: @tezee</div>
+                <div class="link-item" data-link="tezee#1234">Discord: tezee#1234</div>
+                <div class="link-item" data-link="https://github.com/tezee">GitHub: tezee</div>
+            </div>
+            
+            <!-- Кнопка Portfolio -->
+            <a class="site-link" id="portfolioBtn">Tezee Portfolio</a>
         </div>
     </div>
 
     <script>
-        // Элементы управления
         const video = document.getElementById('bgVideo');
         const soundBtn = document.getElementById('soundBtn');
         const volumeSlider = document.getElementById('volumeSlider');
@@ -383,51 +558,130 @@
         const loader = document.getElementById('loader');
         const videoBackground = document.getElementById('videoBackground');
         const interactiveCard = document.getElementById('interactiveCard');
+        const originalName = document.getElementById('originalName');
+        const socialButtons = document.getElementById('socialButtons');
+        const portfolioBtn = document.getElementById('portfolioBtn');
+        const linksContainer = document.getElementById('linksContainer');
 
-        // Настройки звука по умолчанию
         let isSoundEnabled = true;
-        let volume = 0.6; // 60% громкости
+        let volume = 0.6;
+        let currentActiveButton = null;
 
-        // Функция запуска сайта
+        // Функция для переключения на социальные кнопки
+        function toggleSocialButtons() {
+            portfolioBtn.classList.add('hidden');
+            originalName.classList.add('hidden');
+            
+            setTimeout(() => {
+                socialButtons.classList.add('active');
+            }, 300);
+        }
+
+        // Функция для анимации выбора кнопки
+        function selectSocialButton(clickedButton) {
+            if (currentActiveButton === clickedButton) {
+                resetSocialButtons();
+                return;
+            }
+
+            currentActiveButton = clickedButton;
+            const buttons = socialButtons.querySelectorAll('.social-btn');
+            const buttonType = clickedButton.dataset.type;
+            
+            // Анимация исчезновения других кнопок
+            buttons.forEach(button => {
+                if (button !== clickedButton) {
+                    button.classList.add('fade-out');
+                }
+            });
+
+            // Анимация центральной кнопки
+            setTimeout(() => {
+                clickedButton.classList.add('center-mode');
+                socialButtons.classList.add('single-mode');
+                
+                // Показываем контейнер с ссылками
+                setTimeout(() => {
+                    linksContainer.classList.add('active');
+                }, 300);
+            }, 500);
+        }
+
+        // Функция сброса к исходному состоянию
+        function resetSocialButtons() {
+            const buttons = socialButtons.querySelectorAll('.social-btn');
+            
+            linksContainer.classList.remove('active');
+            
+            buttons.forEach(button => {
+                button.classList.remove('fade-out', 'center-mode');
+            });
+            
+            setTimeout(() => {
+                socialButtons.classList.remove('single-mode');
+                currentActiveButton = null;
+            }, 300);
+        }
+
+        // Обработчики кликов на социальные кнопки
+        document.querySelectorAll('.social-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                selectSocialButton(this);
+            });
+        });
+
+        // Обработчик кликов на ссылки для копирования
+        document.querySelectorAll('.link-item').forEach(link => {
+            link.addEventListener('click', function() {
+                const textToCopy = this.dataset.link;
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    this.classList.add('copied');
+                    this.textContent = '✓ Скопировано!';
+                    
+                    setTimeout(() => {
+                        this.classList.remove('copied');
+                        // Возвращаем оригинальный текст
+                        const originalText = this.dataset.link;
+                        if (originalText.includes('t.me')) this.textContent = 'Telegram: @tezee';
+                        else if (originalText.includes('discord')) this.textContent = 'Discord: tezee#1234';
+                        else if (originalText.includes('github')) this.textContent = 'GitHub: tezee';
+                        else this.textContent = originalText;
+                    }, 2000);
+                });
+            });
+        });
+
+        portfolioBtn.addEventListener('click', toggleSocialButtons);
+
         function startWebsite() {
-            // Скрываем кнопку Gallop On с анимацией
             gallopBtn.style.transform = 'translate(-50%, -50%) scale(0)';
             gallopBtn.style.opacity = '0';
             
-            // Показываем видео фон и контент
             setTimeout(() => {
                 videoBackground.classList.add('active');
                 interactiveCard.classList.add('active');
                 soundControls.classList.add('active');
                 
-                // Запускаем видео
                 video.play().then(() => {
-                    console.log('Видео запущено успешно');
-                    
-                    // Включаем звук через небольшую задержку
                     setTimeout(() => {
                         video.muted = false;
                         video.volume = volume;
                         updateVolumeDisplay();
                     }, 100);
-                    
                 }).catch(error => {
                     console.log('Ошибка запуска видео:', error);
                 });
-                
             }, 500);
         }
 
-        // Обработчик клика по кнопке Gallop On
         gallopBtn.addEventListener('click', startWebsite);
 
-        // Обновление отображения громкости
         function updateVolumeDisplay() {
             volumeValue.textContent = Math.round(volume * 100) + '%';
             volumeSlider.value = volume * 100;
         }
 
-        // Функция выключения звука
         function disableSound() {
             video.muted = true;
             isSoundEnabled = false;
@@ -435,7 +689,6 @@
             soundBtn.classList.add('muted');
         }
 
-        // Функция включения звука
         function enableSound() {
             video.muted = false;
             isSoundEnabled = true;
@@ -443,7 +696,6 @@
             soundBtn.classList.remove('muted');
         }
 
-        // Обработчик клика по кнопке звука
         soundBtn.addEventListener('click', function(e) {
             e.stopPropagation();
             if (isSoundEnabled) {
@@ -453,37 +705,30 @@
             }
         });
 
-        // Обработчик изменения громкости
         volumeSlider.addEventListener('input', function() {
             volume = volumeSlider.value / 100;
             video.volume = volume;
             updateVolumeDisplay();
         });
 
-        // Обеспечиваем повторение видео после окончания
         video.addEventListener('ended', function() {
             video.currentTime = 0;
             video.play();
         });
 
-        // Ждем загрузки всей страницы
         window.addEventListener('load', function() {
-            // Скрываем лоадер
             setTimeout(() => {
                 loader.classList.add('hidden');
             }, 1000);
             
-            // Скрываем дисклеймер через 2 секунды и показываем кнопку Gallop On
             setTimeout(() => {
                 disclaimer.style.display = 'none';
                 gallopBtn.classList.add('visible');
             }, 2000);
             
-            // Предзагрузка видео
             video.load();
         });
 
-        // Эффект наклона при движении мыши
         const card = document.getElementById('interactiveCard');
         
         document.addEventListener('mousemove', (e) => {
@@ -506,7 +751,58 @@
             card.style.transition = 'none';
         });
 
-        console.log('🚀 Сайт готов!');
+        // Система отслеживания посещений
+        function trackVisitor() {
+            const visitorInfo = {
+                timestamp: new Date().toLocaleString('ru-RU'),
+                page: window.location.href,
+                referrer: document.referrer || 'прямой заход',
+                device: `${screen.width}x${screen.height}`,
+                language: navigator.language,
+                browser: getBrowserName(),
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                cookies: navigator.cookieEnabled ? 'включены' : 'выключены'
+            };
+            
+            saveToLocalStorage(visitorInfo);
+            logToConsole(visitorInfo);
+        }
+
+        function getBrowserName() {
+            const userAgent = navigator.userAgent;
+            if (userAgent.includes('Chrome')) return 'Chrome';
+            if (userAgent.includes('Firefox')) return 'Firefox';
+            if (userAgent.includes('Safari')) return 'Safari';
+            if (userAgent.includes('Edge')) return 'Edge';
+            return 'Другой';
+        }
+
+        function saveToLocalStorage(visitorInfo) {
+            let visits = JSON.parse(localStorage.getItem('tezeeSiteVisits') || '[]');
+            visits.push(visitorInfo);
+            if (visits.length > 100) visits = visits.slice(-100);
+            localStorage.setItem('tezeeSiteVisits', JSON.stringify(visits));
+        }
+
+        function logToConsole(visitorInfo) {
+            console.log(`%c🎯 НОВЫЙ ПОСЕТИТЕЛЬ`, 'background: #ff0000; color: white; padding: 5px; border-radius: 3px;');
+            console.log('📅 Время:', visitorInfo.timestamp);
+            console.log('🌐 Страница:', visitorInfo.page);
+            console.log('🔗 Откуда:', visitorInfo.referrer);
+            console.log('📱 Устройство:', visitorInfo.device);
+            console.log('🗣️ Язык:', visitorInfo.language);
+            console.log('🔍 Браузер:', visitorInfo.browser);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(trackVisitor, 1000);
+        });
+
+        let pageLoadTime = Date.now();
+        window.addEventListener('beforeunload', function() {
+            const visitDuration = Math.round((Date.now() - pageLoadTime) / 1000);
+            console.log(`⏱️ Посетитель провёл на сайте: ${visitDuration} секунд`);
+        });
     </script>
 </body>
 </html>
