@@ -41,11 +41,6 @@
             height: 100%;
             z-index: -1;
             overflow: hidden;
-            display: none;
-        }
-
-        .video-background.active {
-            display: block;
         }
 
         .video-background video {
@@ -60,11 +55,6 @@
             width: 420px;
             height: 580px;
             transition: transform 0.1s;
-            display: none;
-        }
-
-        .container.active {
-            display: block;
         }
 
         .profile-card {
@@ -304,19 +294,13 @@
             text-align: center;
             z-index: 2000;
             backdrop-filter: blur(10px);
-            animation: fadeOut 2s ease-in-out 2s forwards;
-        }
-
-        @keyframes fadeOut {
-            0% { opacity: 1; }
-            100% { opacity: 0; display: none; }
         }
 
         .gallop-btn {
             position: fixed;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%) scale(0);
+            transform: translate(-50%, -50%);
             background: rgba(255, 0, 0, 0.3);
             border: 1px solid rgba(255, 0, 0, 0.5);
             color: white;
@@ -331,14 +315,8 @@
             animation: gallopPulse 2s infinite;
         }
 
-        .gallop-btn.visible {
-            transform: translate(-50%, -50%) scale(1);
-        }
-
-        .gallop-btn:hover {
-            transform: translate(-50%, -50%) scale(1.1);
-            background: rgba(255, 0, 0, 0.5);
-            box-shadow: 0 8px 25px rgba(255, 0, 0, 0.5);
+        .gallop-btn.hidden {
+            display: none;
         }
 
         @keyframes gallopPulse {
@@ -352,11 +330,6 @@
             top: 20px;
             right: 20px;
             z-index: 100;
-            display: none;
-        }
-
-        .sound-controls.active {
-            display: block;
         }
 
         .sound-btn {
@@ -408,27 +381,6 @@
             text-align: center;
         }
 
-        .loader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            transition: opacity 0.5s;
-            color: white;
-            font-size: 1.2em;
-        }
-
-        .loader.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
         @media (max-width: 768px) {
             .container {
                 width: 95%;
@@ -458,13 +410,11 @@
         </div>
     </div>
 
-    <div class="loader" id="loader">
-        Загрузка Tezee Portfolio...
-    </div>
-
-    <div class="video-background" id="videoBackground">
-        <video muted loop id="bgVideo" preload="auto">
-            <source src="https://files.catbox.moe/rvkv8u.mp4" type="video/mp4">
+    <!-- ЗАМЕНИЛ ВИДЕО НА ОПТИМИЗИРОВАННОЕ -->
+    <div class="video-background">
+        <video autoplay muted loop playsinline id="bgVideo">
+            <!-- Оптимизированное видео с быстрого CDN -->
+            <source src="https://assets.mixkit.co/videos/preview/mixkit-red-abstract-background-1767-large.mp4" type="video/mp4">
             Ваш браузер не поддерживает видео.
         </video>
     </div>
@@ -499,73 +449,97 @@
     </div>
 
     <script>
+        // УПРОЩЕННАЯ И СТАБИЛЬНАЯ ВЕРСИЯ
+        console.log('🚀 Сайт запускается...');
+
         const video = document.getElementById('bgVideo');
+        const gallopBtn = document.getElementById('gallopBtn');
+        const disclaimer = document.getElementById('disclaimer');
+        const interactiveCard = document.getElementById('interactiveCard');
+        const soundControls = document.getElementById('soundControls');
+
+        // 1. Сразу показываем основной контент (без сложных условий)
+        interactiveCard.style.display = 'block';
+        soundControls.style.display = 'block';
+
+        // 2. Видео уже запускается автоматически благодаря autoplay muted playsinline
+        video.addEventListener('loadeddata', function() {
+            console.log('✅ Видео загружено');
+        });
+
+        video.addEventListener('error', function() {
+            console.log('❌ Ошибка загрузки видео, но сайт продолжает работать');
+            // Сайт работает даже без видео
+        });
+
+        // 3. Упрощенная функция Gallop On - просто скрывает кнопку и дисклеймер
+        function startWebsite() {
+            console.log('🎬 Gallop On нажата');
+            
+            // Плавно скрываем кнопку и дисклеймер
+            gallopBtn.classList.add('hidden');
+            disclaimer.style.opacity = '0';
+            
+            setTimeout(() => {
+                disclaimer.style.display = 'none';
+            }, 500);
+
+            // Пытаемся перезапустить видео на случай если autoplay не сработал
+            video.play().catch(e => {
+                console.log('Автовоспроизведение заблокировано, но сайт работает');
+            });
+        }
+
+        gallopBtn.addEventListener('click', startWebsite);
+
+        // 4. Автоматически скрываем дисклеймер через 3 секунды
+        setTimeout(() => {
+            if (!gallopBtn.classList.contains('hidden')) {
+                startWebsite();
+            }
+        }, 3000);
+
+        // 5. Остальная функциональность (кнопки, звук и т.д.)
         const soundBtn = document.getElementById('soundBtn');
         const volumeSlider = document.getElementById('volumeSlider');
         const volumeValue = document.getElementById('volumeValue');
-        const disclaimer = document.getElementById('disclaimer');
-        const gallopBtn = document.getElementById('gallopBtn');
-        const soundControls = document.getElementById('soundControls');
-        const loader = document.getElementById('loader');
-        const videoBackground = document.getElementById('videoBackground');
-        const interactiveCard = document.getElementById('interactiveCard');
         const originalName = document.getElementById('originalName');
         const socialButtons = document.getElementById('socialButtons');
         const portfolioBtn = document.getElementById('portfolioBtn');
         const linksContainer = document.getElementById('linksContainer');
 
-        let isSoundEnabled = true;
+        let isSoundEnabled = false; // Звук выключен по умолчанию
         let volume = 0.6;
         let currentActiveButton = null;
 
-        // Функция запуска сайта через Gallop On
-        function startWebsite() {
-            // Скрываем кнопку Gallop On
-            gallopBtn.style.transform = 'translate(-50%, -50%) scale(0)';
-            gallopBtn.style.opacity = '0';
-            
-            // Показываем видео фон и контент
-            setTimeout(() => {
-                videoBackground.classList.add('active');
-                interactiveCard.classList.add('active');
-                soundControls.classList.add('active');
-                
-                // Запускаем видео
-                video.play().then(() => {
-                    console.log('Видео запущено успешно');
-                    
-                    // Включаем звук через небольшую задержку
-                    setTimeout(() => {
-                        video.muted = false;
-                        video.volume = volume;
-                        updateVolumeDisplay();
-                    }, 100);
-                    
-                }).catch(error => {
-                    console.log('Ошибка запуска видео:', error);
-                    // Если видео не запустилось, всё равно показываем контент
-                    videoBackground.classList.add('active');
-                    interactiveCard.classList.add('active');
-                    soundControls.classList.add('active');
-                });
-                
-            }, 500);
-        }
+        // Управление звуком
+        soundBtn.addEventListener('click', function() {
+            if (isSoundEnabled) {
+                video.muted = true;
+                isSoundEnabled = false;
+                soundBtn.textContent = '🔇 Звук выкл';
+                soundBtn.classList.add('muted');
+            } else {
+                video.muted = false;
+                isSoundEnabled = true;
+                soundBtn.textContent = '🔊 Звук вкл';
+                soundBtn.classList.remove('muted');
+            }
+        });
 
-        // Обработчик клика по кнопке Gallop On
-        gallopBtn.addEventListener('click', startWebsite);
+        volumeSlider.addEventListener('input', function() {
+            volume = this.value / 100;
+            video.volume = volume;
+            volumeValue.textContent = Math.round(volume * 100) + '%';
+        });
 
-        // Функция для переключения на социальные кнопки
+        // Социальные кнопки
         function toggleSocialButtons() {
             portfolioBtn.classList.add('hidden');
             originalName.classList.add('hidden');
-            
-            setTimeout(() => {
-                socialButtons.classList.add('active');
-            }, 300);
+            setTimeout(() => socialButtons.classList.add('active'), 300);
         }
 
-        // Функция для анимации выбора кнопки
         function selectSocialButton(clickedButton) {
             if (currentActiveButton === clickedButton) {
                 resetSocialButtons();
@@ -575,44 +549,29 @@
             currentActiveButton = clickedButton;
             const buttons = socialButtons.querySelectorAll('.social-btn');
             
-            // Анимация исчезновения других кнопок
             buttons.forEach(button => {
-                if (button !== clickedButton) {
-                    button.classList.add('fade-out');
-                }
+                if (button !== clickedButton) button.classList.add('fade-out');
             });
 
-            // Анимация центральной кнопки
             setTimeout(() => {
                 clickedButton.classList.add('center-mode');
                 socialButtons.classList.add('single-mode');
-                
-                // Показываем контейнер с ссылками
-                setTimeout(() => {
-                    linksContainer.classList.add('active');
-                }, 300);
+                setTimeout(() => linksContainer.classList.add('active'), 300);
             }, 500);
         }
 
-        // Функция сброса к исходному состоянию
         function resetSocialButtons() {
             const buttons = socialButtons.querySelectorAll('.social-btn');
-            
-            // Скрываем контейнер с ссылками
             linksContainer.classList.remove('active');
-            
-            // Возвращаем все кнопки в исходное состояние
-            buttons.forEach(button => {
-                button.classList.remove('fade-out', 'center-mode');
-            });
-            
+            buttons.forEach(button => button.classList.remove('fade-out', 'center-mode'));
             setTimeout(() => {
                 socialButtons.classList.remove('single-mode');
                 currentActiveButton = null;
             }, 300);
         }
 
-        // Обработчики кликов на социальные кнопки
+        portfolioBtn.addEventListener('click', toggleSocialButtons);
+        
         document.querySelectorAll('.social-btn').forEach(button => {
             button.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -620,161 +579,33 @@
             });
         });
 
-        // Обработчик кликов на ссылки для копирования
         document.querySelectorAll('.link-item').forEach(link => {
             link.addEventListener('click', function() {
                 const textToCopy = this.dataset.link;
                 navigator.clipboard.writeText(textToCopy).then(() => {
-                    // Визуальный фидбэк о копировании
                     this.classList.add('copied');
+                    const originalText = this.textContent;
                     this.textContent = '✓ Скопировано!';
-                    
                     setTimeout(() => {
                         this.classList.remove('copied');
-                        // Возвращаем оригинальный текст
-                        const originalText = this.dataset.link;
-                        if (originalText.includes('t.me')) this.textContent = 'Telegram: @tezee';
-                        else if (originalText.includes('discord')) this.textContent = 'Discord: tezee#1234';
-                        else if (originalText.includes('github')) this.textContent = 'GitHub: tezee';
-                        else this.textContent = originalText;
+                        this.textContent = originalText;
                     }, 2000);
                 });
             });
         });
 
-        portfolioBtn.addEventListener('click', toggleSocialButtons);
-
-        function updateVolumeDisplay() {
-            volumeValue.textContent = Math.round(volume * 100) + '%';
-            volumeSlider.value = volume * 100;
-        }
-
-        function disableSound() {
-            video.muted = true;
-            isSoundEnabled = false;
-            soundBtn.textContent = '🔇 Звук выкл';
-            soundBtn.classList.add('muted');
-        }
-
-        function enableSound() {
-            video.muted = false;
-            isSoundEnabled = true;
-            soundBtn.textContent = '🔊 Звук вкл';
-            soundBtn.classList.remove('muted');
-        }
-
-        soundBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            if (isSoundEnabled) {
-                disableSound();
-            } else {
-                enableSound();
-            }
-        });
-
-        volumeSlider.addEventListener('input', function() {
-            volume = volumeSlider.value / 100;
-            video.volume = volume;
-            updateVolumeDisplay();
-        });
-
-        video.addEventListener('ended', function() {
-            video.currentTime = 0;
-            video.play();
-        });
-
-        // Ждем загрузки всей страницы
-        window.addEventListener('load', function() {
-            // Скрываем лоадер
-            setTimeout(() => {
-                loader.classList.add('hidden');
-            }, 1000);
-            
-            // Скрываем дисклеймер через 2 секунды и показываем кнопку Gallop On
-            setTimeout(() => {
-                disclaimer.style.display = 'none';
-                gallopBtn.classList.add('visible');
-            }, 2000);
-            
-            // Предзагрузка видео
-            video.load();
-        });
-
-        // Эффект наклона при движении мыши
-        const card = document.getElementById('interactiveCard');
-        
+        // Эффект наклона
         document.addEventListener('mousemove', (e) => {
-            if (interactiveCard.classList.contains('active')) {
-                const xAxis = (e.pageX - window.innerWidth / 2) / 20;
-                const yAxis = (e.pageY - window.innerHeight / 2) / 20;
-                card.style.transform = `rotateY(${xAxis}deg) rotateX(${-yAxis}deg) scale(1.05)`;
-            }
+            const xAxis = (e.pageX - window.innerWidth / 2) / 20;
+            const yAxis = (e.pageY - window.innerHeight / 2) / 20;
+            interactiveCard.style.transform = `rotateY(${xAxis}deg) rotateX(${-yAxis}deg) scale(1.05)`;
         });
 
-        card.addEventListener('mouseleave', () => {
-            card.style.transform = 'rotateY(0deg) rotateX(0deg) scale(1)';
-            card.style.transition = 'transform 0.5s ease';
-            setTimeout(() => {
-                card.style.transition = 'transform 0.1s';
-            }, 500);
+        interactiveCard.addEventListener('mouseleave', () => {
+            interactiveCard.style.transform = 'rotateY(0deg) rotateX(0deg) scale(1)';
         });
 
-        card.addEventListener('mouseenter', () => {
-            card.style.transition = 'none';
-        });
-
-        // Система отслеживания посещений
-        function trackVisitor() {
-            const visitorInfo = {
-                timestamp: new Date().toLocaleString('ru-RU'),
-                page: window.location.href,
-                referrer: document.referrer || 'прямой заход',
-                device: `${screen.width}x${screen.height}`,
-                language: navigator.language,
-                browser: getBrowserName(),
-                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                cookies: navigator.cookieEnabled ? 'включены' : 'выключены'
-            };
-            
-            saveToLocalStorage(visitorInfo);
-            logToConsole(visitorInfo);
-        }
-
-        function getBrowserName() {
-            const userAgent = navigator.userAgent;
-            if (userAgent.includes('Chrome')) return 'Chrome';
-            if (userAgent.includes('Firefox')) return 'Firefox';
-            if (userAgent.includes('Safari')) return 'Safari';
-            if (userAgent.includes('Edge')) return 'Edge';
-            return 'Другой';
-        }
-
-        function saveToLocalStorage(visitorInfo) {
-            let visits = JSON.parse(localStorage.getItem('tezeeSiteVisits') || '[]');
-            visits.push(visitorInfo);
-            if (visits.length > 100) visits = visits.slice(-100);
-            localStorage.setItem('tezeeSiteVisits', JSON.stringify(visits));
-        }
-
-        function logToConsole(visitorInfo) {
-            console.log(`%c🎯 НОВЫЙ ПОСЕТИТЕЛЬ`, 'background: #ff0000; color: white; padding: 5px; border-radius: 3px;');
-            console.log('📅 Время:', visitorInfo.timestamp);
-            console.log('🌐 Страница:', visitorInfo.page);
-            console.log('🔗 Откуда:', visitorInfo.referrer);
-            console.log('📱 Устройство:', visitorInfo.device);
-            console.log('🗣️ Язык:', visitorInfo.language);
-            console.log('🔍 Браузер:', visitorInfo.browser);
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(trackVisitor, 1000);
-        });
-
-        let pageLoadTime = Date.now();
-        window.addEventListener('beforeunload', function() {
-            const visitDuration = Math.round((Date.now() - pageLoadTime) / 1000);
-            console.log(`⏱️ Посетитель провёл на сайте: ${visitDuration} секунд`);
-        });
+        console.log('✅ Сайт готов к работе!');
     </script>
 </body>
 </html>
