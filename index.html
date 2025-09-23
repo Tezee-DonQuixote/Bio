@@ -30,18 +30,10 @@
             justify-content: center;
             align-items: center;
             perspective: 1000px;
-            background: linear-gradient(45deg, #000000, #1a0000, #000000);
-            background-size: 400% 400%;
-            animation: gradientShift 10s ease infinite;
+            background: #000;
         }
 
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .animated-bg {
+        .video-background {
             position: fixed;
             top: 0;
             left: 0;
@@ -49,22 +41,18 @@
             height: 100%;
             z-index: -1;
             overflow: hidden;
-            opacity: 0.3;
+            display: none;
         }
 
-        .particle {
-            position: absolute;
-            background: rgba(255, 0, 0, 0.1);
-            border-radius: 50%;
-            animation: float 15s infinite linear;
+        .video-background.active {
+            display: block;
         }
 
-        @keyframes float {
-            0% { transform: translateY(0) translateX(0) rotate(0deg); }
-            25% { transform: translateY(-100px) translateX(100px) rotate(90deg); }
-            50% { transform: translateY(-200px) translateX(0) rotate(180deg); }
-            75% { transform: translateY(-100px) translateX(-100px) rotate(270deg); }
-            100% { transform: translateY(0) translateX(0) rotate(360deg); }
+        .video-background video {
+            min-width: 100%;
+            min-height: 100%;
+            object-fit: cover;
+            filter: brightness(0.7);
         }
 
         .container {
@@ -72,18 +60,21 @@
             width: 420px;
             height: 580px;
             transition: transform 0.1s;
+            display: none;
+        }
+
+        .container.active {
+            display: block;
         }
 
         .profile-card {
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(20px);
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(15px);
             border-radius: 15px;
             padding: 40px;
             text-align: center;
-            box-shadow: 
-                0 10px 40px rgba(255, 0, 0, 0.3),
-                0 0 100px rgba(255, 0, 0, 0.1) inset;
-            border: 1px solid rgba(255, 0, 0, 0.4);
+            box-shadow: 0 10px 40px rgba(255, 0, 0, 0.3);
+            border: 1px solid rgba(255, 0, 0, 0.3);
             height: 100%;
             display: flex;
             flex-direction: column;
@@ -101,18 +92,7 @@
             height: 200%;
             background: linear-gradient(45deg, transparent, rgba(255, 0, 0, 0.1), transparent);
             transform: rotate(45deg);
-            animation: shine 6s infinite;
-        }
-
-        .profile-card::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            animation: shimmer 3s infinite;
+            animation: shine 3s infinite;
         }
 
         @keyframes shine {
@@ -120,25 +100,13 @@
             100% { transform: rotate(45deg) translateX(100%); }
         }
 
-        @keyframes shimmer {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
-
         .avatar {
             width: 100px;
             height: 100px;
             border-radius: 50%;
             margin: 0 auto 25px;
-            border: 2px solid rgba(255, 0, 0, 0.6);
+            border: 2px solid rgba(255, 0, 0, 0.5);
             object-fit: cover;
-            box-shadow: 0 0 30px rgba(255, 0, 0, 0.4);
-            animation: avatarGlow 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes avatarGlow {
-            from { box-shadow: 0 0 20px rgba(255, 0, 0, 0.4); }
-            to { box-shadow: 0 0 40px rgba(255, 0, 0, 0.6); }
         }
 
         .main-name {
@@ -146,20 +114,12 @@
             font-weight: bold;
             color: white;
             margin-bottom: 8px;
-            text-shadow: 
-                0 0 10px rgba(255, 0, 0, 0.7),
-                0 0 20px rgba(255, 0, 0, 0.3);
-            animation: textPulse 3s ease-in-out infinite;
-        }
-
-        @keyframes textPulse {
-            0%, 100% { text-shadow: 0 0 10px rgba(255, 0, 0, 0.7), 0 0 20px rgba(255, 0, 0, 0.3); }
-            50% { text-shadow: 0 0 15px rgba(255, 0, 0, 0.9), 0 0 30px rgba(255, 0, 0, 0.5); }
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
         }
 
         .original-name {
             font-size: 1.1em;
-            color: rgba(255, 255, 255, 0.8);
+            color: rgba(255, 255, 255, 0.7);
             margin-bottom: 25px;
             font-family: 'Courier New', monospace;
             transition: all 0.3s ease;
@@ -195,7 +155,7 @@
             width: 70px;
             height: 70px;
             background: rgba(255, 0, 0, 0.3);
-            border: 1px solid rgba(255, 0, 0, 0.6);
+            border: 1px solid rgba(255, 0, 0, 0.5);
             border-radius: 15px;
             display: flex;
             align-items: center;
@@ -207,22 +167,6 @@
             overflow: hidden;
             position: relative;
             flex-shrink: 0;
-            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.2);
-        }
-
-        .social-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .social-btn:hover::before {
-            left: 100%;
         }
 
         .social-btn img {
@@ -231,19 +175,17 @@
             object-fit: contain;
             filter: brightness(0) invert(1);
             transition: all 0.3s ease;
-            z-index: 1;
-            position: relative;
         }
 
         .social-btn:hover {
             background: rgba(255, 0, 0, 0.5);
-            transform: translateY(-5px) scale(1.1);
-            box-shadow: 0 10px 25px rgba(255, 0, 0, 0.4);
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.4);
         }
 
         .social-btn:hover img {
-            transform: scale(1.2);
-            filter: brightness(0) invert(1) drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
+            transform: scale(1.1);
+            filter: brightness(0) invert(1) drop-shadow(0 0 3px rgba(255, 255, 255, 0.5));
         }
 
         .social-btn.fade-out {
@@ -257,17 +199,11 @@
             transform: scale(1.3);
             z-index: 10;
             position: relative;
-            animation: centerPulse 2s ease-in-out infinite;
-        }
-
-        @keyframes centerPulse {
-            0%, 100% { transform: scale(1.3); }
-            50% { transform: scale(1.4); }
         }
 
         .links-container {
             display: none;
-            background: rgba(255, 0, 0, 0.15);
+            background: rgba(255, 0, 0, 0.2);
             border: 1px solid rgba(255, 0, 0, 0.4);
             border-radius: 15px;
             padding: 25px;
@@ -284,7 +220,7 @@
         @keyframes slideUp {
             from {
                 opacity: 0;
-                transform: translateY(30px);
+                transform: translateY(20px);
             }
             to {
                 opacity: 1;
@@ -294,7 +230,7 @@
 
         .link-item {
             background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 10px;
             padding: 15px;
             margin: 10px 0;
@@ -305,41 +241,16 @@
             cursor: pointer;
             font-family: 'Courier New', monospace;
             font-size: 0.95em;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .link-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            transition: left 0.5s;
-        }
-
-        .link-item:hover::before {
-            left: 100%;
         }
 
         .link-item:hover {
             background: rgba(255, 255, 255, 0.2);
-            transform: translateX(8px);
-            border-color: rgba(255, 0, 0, 0.5);
+            transform: translateX(5px);
         }
 
         .link-item.copied {
             background: rgba(0, 255, 0, 0.2);
             border-color: rgba(0, 255, 0, 0.5);
-            animation: copiedPulse 0.5s ease;
-        }
-
-        @keyframes copiedPulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
         }
 
         .site-link {
@@ -357,13 +268,12 @@
             overflow: hidden;
             cursor: pointer;
             margin-top: 10px;
-            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.2);
         }
 
         .site-link:hover {
             background: rgba(255, 0, 0, 0.5);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(255, 0, 0, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.4);
         }
 
         .site-link.hidden {
@@ -376,15 +286,9 @@
 
         .decoration-line {
             width: 60%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, rgba(255, 0, 0, 0.8), transparent);
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 0, 0, 0.5), transparent);
             margin: 20px auto;
-            animation: linePulse 2s ease-in-out infinite;
-        }
-
-        @keyframes linePulse {
-            0%, 100% { opacity: 0.7; }
-            50% { opacity: 1; }
         }
 
         .disclaimer {
@@ -392,20 +296,19 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.95);
+            background: rgba(0, 0, 0, 0.9);
             color: white;
             padding: 20px 30px;
             border-radius: 10px;
-            border: 2px solid rgba(255, 0, 0, 0.6);
+            border: 2px solid rgba(255, 0, 0, 0.5);
             text-align: center;
-            z-index: 2000; /* Уменьшил z-index */
+            z-index: 2000;
             backdrop-filter: blur(10px);
-            animation: disclaimerFade 4s forwards;
+            animation: fadeOut 2s ease-in-out 2s forwards;
         }
 
-        @keyframes disclaimerFade {
+        @keyframes fadeOut {
             0% { opacity: 1; }
-            80% { opacity: 1; }
             100% { opacity: 0; display: none; }
         }
 
@@ -413,55 +316,35 @@
             position: fixed;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%) scale(0); /* Начинаем с scale(0) */
-            background: linear-gradient(45deg, rgba(255, 0, 0, 0.3), rgba(255, 50, 50, 0.5));
-            border: 2px solid rgba(255, 0, 0, 0.6);
+            transform: translate(-50%, -50%) scale(0);
+            background: rgba(255, 0, 0, 0.3);
+            border: 1px solid rgba(255, 0, 0, 0.5);
             color: white;
-            padding: 18px 35px;
-            border-radius: 25px;
-            font-size: 1.4em;
+            padding: 15px 30px;
+            border-radius: 20px;
+            font-size: 1.3em;
             font-weight: bold;
             cursor: pointer;
-            z-index: 2500; /* Увеличил z-index чтобы была поверх дисклеймера */
+            z-index: 1500;
             transition: all 0.5s ease;
-            box-shadow: 
-                0 5px 20px rgba(255, 0, 0, 0.3),
-                0 0 30px rgba(255, 0, 0, 0.2) inset;
-            animation: gallopPulse 1.5s ease-in-out infinite;
-            text-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
-            opacity: 0; /* Начинаем невидимой */
+            box-shadow: 0 5px 20px rgba(255, 0, 0, 0.3);
+            animation: gallopPulse 2s infinite;
         }
 
         .gallop-btn.visible {
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(1); /* Появляемся с анимацией */
+            transform: translate(-50%, -50%) scale(1);
         }
 
         .gallop-btn:hover {
             transform: translate(-50%, -50%) scale(1.1);
-            background: linear-gradient(45deg, rgba(255, 0, 0, 0.5), rgba(255, 50, 50, 0.7));
-            box-shadow: 
-                0 8px 30px rgba(255, 0, 0, 0.5),
-                0 0 40px rgba(255, 0, 0, 0.3) inset;
-        }
-
-        .gallop-btn.hidden {
-            opacity: 0;
-            transform: translate(-50%, -50%) scale(0.5);
-            pointer-events: none;
+            background: rgba(255, 0, 0, 0.5);
+            box-shadow: 0 8px 25px rgba(255, 0, 0, 0.5);
         }
 
         @keyframes gallopPulse {
-            0%, 100% { 
-                box-shadow: 
-                    0 5px 20px rgba(255, 0, 0, 0.3),
-                    0 0 30px rgba(255, 0, 0, 0.2) inset;
-            }
-            50% { 
-                box-shadow: 
-                    0 8px 30px rgba(255, 0, 0, 0.5),
-                    0 0 40px rgba(255, 0, 0, 0.3) inset;
-            }
+            0% { box-shadow: 0 5px 20px rgba(255, 0, 0, 0.3); }
+            50% { box-shadow: 0 8px 25px rgba(255, 0, 0, 0.5); }
+            100% { box-shadow: 0 5px 20px rgba(255, 0, 0, 0.3); }
         }
 
         .sound-controls {
@@ -469,7 +352,7 @@
             top: 20px;
             right: 20px;
             z-index: 100;
-            display: none; /* Сначала скрываем */
+            display: none;
         }
 
         .sound-controls.active {
@@ -486,12 +369,10 @@
             font-size: 0.9em;
             transition: all 0.3s ease;
             margin-bottom: 10px;
-            backdrop-filter: blur(10px);
         }
 
         .sound-btn:hover {
             background: rgba(255, 0, 0, 0.5);
-            transform: scale(1.05);
         }
 
         .sound-btn.muted {
@@ -503,7 +384,7 @@
             position: absolute;
             top: 100%;
             right: 0;
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(0, 0, 0, 0.8);
             padding: 15px;
             border-radius: 10px;
             border: 1px solid rgba(255, 0, 0, 0.3);
@@ -519,9 +400,6 @@
         .volume-slider {
             width: 100%;
             margin: 10px 0;
-            background: rgba(255, 0, 0, 0.3);
-            border-radius: 5px;
-            height: 6px;
         }
 
         .volume-value {
@@ -537,7 +415,6 @@
                 min-height: 550px;
                 margin: 20px;
             }
-            
             .profile-card {
                 padding: 30px;
             }
@@ -545,8 +422,6 @@
     </style>
 </head>
 <body>
-    <div class="animated-bg" id="animatedBg"></div>
-
     <div class="disclaimer" id="disclaimer">
         Сайт был создан по приколу по этому могут быть недочёты.
     </div>
@@ -554,7 +429,16 @@
     <button class="gallop-btn" id="gallopBtn">Gallop On</button>
 
     <div class="sound-controls" id="soundControls">
-        <div class="sound-btn" id="soundBtn">🎵 Звук</div>
+        <div class="sound-btn" id="soundBtn">🔊 Звук вкл</div>
+        <div class="volume-mixer">
+            <div class="volume-value">Громкость: <span id="volumeValue">60%</span></div>
+            <input type="range" min="0" max="100" value="60" class="volume-slider" id="volumeSlider">
+        </div>
+    </div>
+
+    <div class="video-background" id="videoBackground">
+        <!-- ПРОСТОЕ ИЗОБРАЖЕНИЕ ВМЕСТО ВИДЕО -->
+        <div style="width:100%;height:100%;background:linear-gradient(45deg, #000, #330000, #000);background-size:400% 400%;animation:gradient 10s ease infinite;"></div>
     </div>
 
     <div class="container" id="interactiveCard">
@@ -587,73 +471,56 @@
     </div>
 
     <script>
-        // Создаем анимированные частицы для фона
-        function createParticles() {
-            const bg = document.getElementById('animatedBg');
-            for (let i = 0; i < 20; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                const size = Math.random() * 100 + 50;
-                const posX = Math.random() * 100;
-                const posY = Math.random() * 100;
-                const delay = Math.random() * 20;
-                
-                particle.style.width = `${size}px`;
-                particle.style.height = `${size}px`;
-                particle.style.left = `${posX}%`;
-                particle.style.top = `${posY}%`;
-                particle.style.animationDelay = `${delay}s`;
-                particle.style.animationDuration = `${15 + Math.random() * 10}s`;
-                
-                bg.appendChild(particle);
-            }
-        }
+        // ПРОСТАЯ И РАБОЧАЯ ЛОГИКА
+        console.log('🚀 Запуск сайта...');
 
-        // Основная логика
         const gallopBtn = document.getElementById('gallopBtn');
         const disclaimer = document.getElementById('disclaimer');
-        const soundControls = document.getElementById('soundControls');
+        const videoBackground = document.getElementById('videoBackground');
         const interactiveCard = document.getElementById('interactiveCard');
+        const soundControls = document.getElementById('soundControls');
 
-        // Создаем частицы при загрузке
-        createParticles();
+        // 1. Показываем кнопку Gallop On после дисклеймера
+        setTimeout(() => {
+            gallopBtn.classList.add('visible');
+            console.log('✅ Кнопка Gallop On показана');
+        }, 2500); // Через 2.5 секунды (после дисклеймера)
 
-        // Функция запуска сайта
+        // 2. Функция запуска сайта
         function startWebsite() {
-            gallopBtn.classList.add('hidden');
+            console.log('🎬 Нажата Gallop On');
+            
+            // Скрываем кнопку и дисклеймер
+            gallopBtn.style.display = 'none';
             disclaimer.style.display = 'none';
             
             // Показываем основной контент
-            soundControls.style.display = 'block';
-            interactiveCard.style.display = 'block';
+            videoBackground.classList.add('active');
+            interactiveCard.classList.add('active');
+            soundControls.classList.add('active');
             
-            // Добавляем финальную анимацию появления
-            document.body.style.animation = 'gradientShift 10s ease infinite';
+            console.log('✅ Сайт запущен');
         }
 
-        // Показываем кнопку Gallop On после загрузки
-        window.addEventListener('load', function() {
-            // Показываем кнопку через небольшую задержку после дисклеймера
-            setTimeout(() => {
-                gallopBtn.classList.add('visible');
-            }, 500);
-        });
-
+        // 3. Обработчик клика
         gallopBtn.addEventListener('click', startWebsite);
 
-        // Автоматический запуск через 4 секунды
+        // 4. Автозапуск через 5 секунд если не нажали
         setTimeout(() => {
-            if (!gallopBtn.classList.contains('hidden')) {
+            if (gallopBtn.style.display !== 'none') {
+                console.log('⏰ Автозапуск через 5 секунд');
                 startWebsite();
             }
-        }, 4000);
+        }, 5000);
 
-        // Остальная функциональность
+        // 5. Социальные кнопки (рабочая версия)
         const originalName = document.getElementById('originalName');
         const socialButtons = document.getElementById('socialButtons');
         const portfolioBtn = document.getElementById('portfolioBtn');
         const linksContainer = document.getElementById('linksContainer');
         const soundBtn = document.getElementById('soundBtn');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const volumeValue = document.getElementById('volumeValue');
 
         let currentActiveButton = null;
 
@@ -687,12 +554,11 @@
             const buttons = socialButtons.querySelectorAll('.social-btn');
             linksContainer.classList.remove('active');
             buttons.forEach(button => button.classList.remove('fade-out', 'center-mode'));
-            setTimeout(() => {
-                socialButtons.classList.remove('single-mode');
-                currentActiveButton = null;
-            }, 300);
+            setTimeout(() => socialButtons.classList.remove('single-mode'), 300);
+            currentActiveButton = null;
         }
 
+        // Обработчики событий
         portfolioBtn.addEventListener('click', toggleSocialButtons);
         
         document.querySelectorAll('.social-btn').forEach(button => {
@@ -717,25 +583,29 @@
             });
         });
 
-        // Убрал звуковую систему, т.к. видео нет
-        soundBtn.addEventListener('click', function() {
-            // Можно добавить звуковые эффекты позже
-            this.textContent = this.textContent === '🎵 Звук' ? '🔇 Звук' : '🎵 Звук';
-        });
-
         // Эффект наклона
-        const card = document.getElementById('interactiveCard');
         document.addEventListener('mousemove', (e) => {
             const xAxis = (e.pageX - window.innerWidth / 2) / 25;
             const yAxis = (e.pageY - window.innerHeight / 2) / 25;
-            card.style.transform = `rotateY(${xAxis}deg) rotateX(${-yAxis}deg) scale(1.03)`;
+            interactiveCard.style.transform = `rotateY(${xAxis}deg) rotateX(${-yAxis}deg) scale(1.03)`;
         });
 
-        card.addEventListener('mouseleave', () => {
-            card.style.transform = 'rotateY(0deg) rotateX(0deg) scale(1)';
+        interactiveCard.addEventListener('mouseleave', () => {
+            interactiveCard.style.transform = 'rotateY(0deg) rotateX(0deg) scale(1)';
         });
 
-        console.log('🚀 Сайт запущен с анимированным фоном!');
+        // Стили для градиента
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes gradient {
+                0% { background-position: 0% 50%; }
+                50% { background-position: 100% 50%; }
+                100% { background-position: 0% 50%; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        console.log('✅ Сайт готов к работе!');
     </script>
 </body>
 </html>
