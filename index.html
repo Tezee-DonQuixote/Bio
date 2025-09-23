@@ -398,7 +398,7 @@
             border-radius: 10px;
             border: 2px solid rgba(255, 0, 0, 0.6);
             text-align: center;
-            z-index: 2000;
+            z-index: 2000; /* Уменьшил z-index */
             backdrop-filter: blur(10px);
             animation: disclaimerFade 4s forwards;
         }
@@ -413,7 +413,7 @@
             position: fixed;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%) scale(0); /* Начинаем с scale(0) */
             background: linear-gradient(45deg, rgba(255, 0, 0, 0.3), rgba(255, 50, 50, 0.5));
             border: 2px solid rgba(255, 0, 0, 0.6);
             color: white;
@@ -422,13 +422,19 @@
             font-size: 1.4em;
             font-weight: bold;
             cursor: pointer;
-            z-index: 1500;
+            z-index: 2500; /* Увеличил z-index чтобы была поверх дисклеймера */
             transition: all 0.5s ease;
             box-shadow: 
                 0 5px 20px rgba(255, 0, 0, 0.3),
                 0 0 30px rgba(255, 0, 0, 0.2) inset;
             animation: gallopPulse 1.5s ease-in-out infinite;
             text-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
+            opacity: 0; /* Начинаем невидимой */
+        }
+
+        .gallop-btn.visible {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1); /* Появляемся с анимацией */
         }
 
         .gallop-btn:hover {
@@ -463,6 +469,11 @@
             top: 20px;
             right: 20px;
             z-index: 100;
+            display: none; /* Сначала скрываем */
+        }
+
+        .sound-controls.active {
+            display: block;
         }
 
         .sound-btn {
@@ -601,7 +612,8 @@
         // Основная логика
         const gallopBtn = document.getElementById('gallopBtn');
         const disclaimer = document.getElementById('disclaimer');
-        const soundBtn = document.getElementById('soundBtn');
+        const soundControls = document.getElementById('soundControls');
+        const interactiveCard = document.getElementById('interactiveCard');
 
         // Создаем частицы при загрузке
         createParticles();
@@ -611,9 +623,21 @@
             gallopBtn.classList.add('hidden');
             disclaimer.style.display = 'none';
             
+            // Показываем основной контент
+            soundControls.style.display = 'block';
+            interactiveCard.style.display = 'block';
+            
             // Добавляем финальную анимацию появления
             document.body.style.animation = 'gradientShift 10s ease infinite';
         }
+
+        // Показываем кнопку Gallop On после загрузки
+        window.addEventListener('load', function() {
+            // Показываем кнопку через небольшую задержку после дисклеймера
+            setTimeout(() => {
+                gallopBtn.classList.add('visible');
+            }, 500);
+        });
 
         gallopBtn.addEventListener('click', startWebsite);
 
@@ -629,6 +653,7 @@
         const socialButtons = document.getElementById('socialButtons');
         const portfolioBtn = document.getElementById('portfolioBtn');
         const linksContainer = document.getElementById('linksContainer');
+        const soundBtn = document.getElementById('soundBtn');
 
         let currentActiveButton = null;
 
