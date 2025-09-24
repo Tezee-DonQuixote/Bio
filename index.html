@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tezee - Portfolio</title>
     <style>
-        /* Все ваши стили остаются без изменений */
         * {
             margin: 0;
             padding: 0;
@@ -557,101 +556,6 @@
             font-family: 'Courier New', monospace;
         }
 
-        /* Стили для прогресс-бара */
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 3000;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .loading-overlay.hidden {
-            display: none;
-        }
-
-        .loading-text {
-            color: white;
-            font-size: 1.2em;
-            text-align: center;
-            font-family: 'Courier New', monospace;
-        }
-
-        .progress-container {
-            width: 300px;
-            height: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            overflow: hidden;
-            border: 1px solid rgba(255, 0, 0, 0.3);
-        }
-
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #ff0000, #ff6b6b);
-            border-radius: 10px;
-            width: 0%;
-            transition: width 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .progress-bar::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-            animation: shimmer 2s infinite;
-        }
-
-        @keyframes shimmer {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
-
-        .progress-percent {
-            color: white;
-            font-size: 1em;
-            font-family: 'Courier New', monospace;
-            margin-top: 10px;
-            text-align: center;
-        }
-
-        .loading-details {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.9em;
-            font-family: 'Courier New', monospace;
-            text-align: center;
-            margin-top: 5px;
-        }
-
-        .quick-start-btn {
-            background: rgba(255, 0, 0, 0.5);
-            border: 1px solid rgba(255, 0, 0, 0.7);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 10px;
-            cursor: pointer;
-            margin-top: 15px;
-            font-family: 'Courier New', monospace;
-            transition: all 0.3s ease;
-        }
-
-        .quick-start-btn:hover {
-            background: rgba(255, 0, 0, 0.7);
-            transform: scale(1.05);
-        }
-
         @keyframes controlsAppear {
             0% {
                 opacity: 0;
@@ -684,26 +588,10 @@
             .volume-slider {
                 width: 100px;
             }
-            .progress-container {
-                width: 250px;
-            }
-            .loading-text {
-                font-size: 1.1em;
-            }
         }
     </style>
 </head>
 <body>
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-text">🎬 Оптимизированная загрузка видео</div>
-        <div class="progress-container">
-            <div class="progress-bar" id="progressBar"></div>
-        </div>
-        <div class="progress-percent" id="progressPercent">0%</div>
-        <div class="loading-details" id="loadingDetails">Инициализация быстрой загрузки...</div>
-        <button class="quick-start-btn" id="quickStartBtn" style="display: none;">🚀 Быстрый старт (частичная загрузка)</button>
-    </div>
-
     <div class="disclaimer" id="disclaimer">
         Сайт был создан по приколу по этому могут быть недочёты.
     </div>
@@ -711,7 +599,10 @@
     <button class="gallop-btn" id="gallopBtn">Gallop On</button>
 
     <div class="video-background" id="videoBackground">
-        <!-- Видео будет добавлено через JavaScript -->
+        <video id="bgVideo" loop playsinline>
+            <source src="https://files.catbox.moe/rvkv8u.mp4" type="video/mp4">
+            Ваш браузер не поддерживает видео.
+        </video>
     </div>
 
     <div class="sound-controls" id="soundControls">
@@ -773,12 +664,8 @@
         // Основная логика
         const gallopBtn = document.getElementById('gallopBtn');
         const disclaimer = document.getElementById('disclaimer');
-        const loadingOverlay = document.getElementById('loadingOverlay');
-        const progressBar = document.getElementById('progressBar');
-        const progressPercent = document.getElementById('progressPercent');
-        const loadingDetails = document.getElementById('loadingDetails');
-        const quickStartBtn = document.getElementById('quickStartBtn');
         const videoBackground = document.getElementById('videoBackground');
+        const bgVideo = document.getElementById('bgVideo');
         const soundControls = document.getElementById('soundControls');
         const soundToggle = document.getElementById('soundToggle');
         const volumeSliderContainer = document.getElementById('volumeSliderContainer');
@@ -791,190 +678,29 @@
 
         let websiteStarted = false;
         let currentActiveButton = null;
-        let isMuted = true;
+        let isMuted = true; // Начинаем с выключенного звука
         let isVolumeVisible = false;
-        let bgVideo = null;
-        let useQuickStart = false;
 
-        // Оптимизированные версии видео (разные качество)
-        const videoSources = {
-            low: "https://files.catbox.moe/z94p0s.mp4", // Низкое качество, быстро грузится
-            high: "https://files.catbox.moe/rvkv8u.mp4"  // Оригинальное качество
-        };
+        // Настройка видео
+        bgVideo.volume = 0.5; // Начальная громкость 50%
+        bgVideo.muted = true; // Начинаем с выключенного звука для автовоспроизведения
 
-        // Обновление прогресс-бара
-        function updateProgress(percent, details = "") {
-            progressBar.style.width = percent + '%';
-            progressPercent.textContent = Math.round(percent) + '%';
-            if (details) {
-                loadingDetails.textContent = details;
-            }
-        }
-
-        // Создание видео элемента с прогрессивной загрузкой
-        function createVideoElement(quality = 'low') {
-            const video = document.createElement('video');
-            video.id = 'bgVideo';
-            video.loop = true;
-            video.playsinline = true;
-            video.preload = 'auto';
-            video.style.width = '100%';
-            video.style.height = '100%';
-            video.style.objectFit = 'cover';
-            video.style.filter = 'brightness(0.7)';
-            
-            const source = document.createElement('source');
-            source.src = videoSources[quality];
-            source.type = 'video/mp4';
-            video.appendChild(source);
-            
-            return video;
-        }
-
-        // Функция прогрессивной загрузки
-        function loadVideoProgressive() {
-            updateProgress(10, "Загрузка быстрой версии...");
-            
-            // Сначала грузим низкокачественную версию
-            bgVideo = createVideoElement('low');
-            videoBackground.appendChild(bgVideo);
-            
-            // Настройка видео
-            bgVideo.volume = 0.5;
-            bgVideo.muted = true;
-            
-            // События загрузки быстрой версии
-            bgVideo.addEventListener('loadstart', function() {
-                updateProgress(15, "Подключение к серверу...");
-            });
-
-            bgVideo.addEventListener('progress', function() {
-                if (bgVideo.buffered.length > 0 && bgVideo.duration > 0) {
-                    const loaded = bgVideo.buffered.end(0);
-                    const duration = bgVideo.duration;
-                    const percent = (loaded / duration) * 100;
-                    
-                    // Быстрая версия считается загруженной при 30%
-                    const quickLoadPercent = Math.min(percent, 30);
-                    updateProgress(10 + quickLoadPercent * 0.6, `Быстрая загрузка: ${Math.round(quickLoadPercent)}%`);
-                    
-                    // Показываем кнопку быстрого старта когда есть достаточно данных
-                    if (quickLoadPercent >= 15 && !useQuickStart) {
-                        quickStartBtn.style.display = 'block';
-                        loadingDetails.textContent = "Можно начать с частичной загрузкой!";
-                    }
-                    
-                    // Если загружено достаточно для плавного воспроизведения
-                    if (quickLoadPercent >= 25 && !websiteStarted) {
-                        autoStartIfReady();
-                    }
-                }
-            });
-
-            bgVideo.addEventListener('canplay', function() {
-                updateProgress(80, "Быстрая версия готова!");
-                if (!websiteStarted && !useQuickStart) {
-                    setTimeout(() => autoStartIfReady(), 500);
-                }
-            });
-
-            bgVideo.addEventListener('canplaythrough', function() {
-                updateProgress(90, "Видео готово к бесперебойному воспроизведению");
-                if (!websiteStarted) {
-                    startWebsite();
-                }
-            });
-
-            // Фоновая загрузка качественной версии
-            setTimeout(() => {
-                loadHighQualityVersion();
-            }, 1000);
-        }
-
-        // Загрузка качественной версии в фоне
-        function loadHighQualityVersion() {
-            const highQualityVideo = createVideoElement('high');
-            highQualityVideo.style.display = 'none';
-            highQualityVideo.preload = 'auto';
-            
-            highQualityVideo.addEventListener('progress', function() {
-                if (highQualityVideo.buffered.length > 0 && highQualityVideo.duration > 0) {
-                    const loaded = highQualityVideo.buffered.end(0);
-                    const duration = highQualityVideo.duration;
-                    const percent = (loaded / duration) * 100;
-                    
-                    // Обновляем общий прогресс
-                    if (percent > 0) {
-                        const totalProgress = 80 + (percent * 0.2); // Последние 20% для HD версии
-                        updateProgress(totalProgress, `Загрузка HD версии: ${Math.round(percent)}%`);
-                    }
-                }
-            });
-
-            highQualityVideo.addEventListener('canplaythrough', function() {
-                updateProgress(100, "HD версия полностью загружена!");
-                
-                // Плавная замена на качественную версию
-                setTimeout(() => {
-                    if (bgVideo) {
-                        highQualityVideo.currentTime = bgVideo.currentTime;
-                        highQualityVideo.volume = bgVideo.volume;
-                        highQualityVideo.muted = bgVideo.muted;
-                        highQualityVideo.style.display = 'block';
-                        bgVideo.style.display = 'none';
-                        
-                        // Запускаем HD версию
-                        highQualityVideo.play().catch(e => console.log('HD video play error:', e));
-                        
-                        // Обновляем ссылку на текущее видео
-                        bgVideo = highQualityVideo;
-                        
-                        setTimeout(() => {
-                            if (bgVideo.parentNode) {
-                                // Удаляем старую версию
-                                const oldVideo = bgVideo.parentNode.querySelector('video[style*="display: none"]');
-                                if (oldVideo) oldVideo.remove();
-                            }
-                        }, 2000);
-                    }
-                }, 500);
-            });
-
-            videoBackground.appendChild(highQualityVideo);
-        }
-
-        // Автоматический старт когда готово
-        function autoStartIfReady() {
-            if (!websiteStarted && bgVideo.readyState >= 3) { // HAVE_FUTURE_DATA
-                updateProgress(85, "Запуск сайта...");
-                setTimeout(() => startWebsite(), 1000);
-            }
-        }
-
-        // Быстрый старт по кнопке
-        quickStartBtn.addEventListener('click', function() {
-            useQuickStart = true;
-            quickStartBtn.style.display = 'none';
-            updateProgress(70, "Быстрый старт активирован!");
-            setTimeout(() => startWebsite(), 500);
-        });
+        // Убедимся, что видео зацикливается
+        bgVideo.loop = true;
 
         // Обработчик громкости
         volumeSlider.addEventListener('input', function() {
-            if (bgVideo) {
-                bgVideo.volume = this.value;
-                updateSoundIcon();
-            }
+            bgVideo.volume = this.value;
+            updateSoundIcon();
         });
 
         // Переключение звука
         soundToggle.addEventListener('click', function() {
-            if (!bgVideo) return;
-            
             isMuted = !isMuted;
             bgVideo.muted = isMuted;
             updateSoundToggle();
             
+            // Показываем/скрываем ползунок громкости
             if (!isMuted) {
                 setTimeout(() => {
                     volumeSliderContainer.classList.add('active');
@@ -986,6 +712,7 @@
             }
         });
 
+        // Скрываем ползунок при клике вне его области
         document.addEventListener('click', function(event) {
             if (isVolumeVisible && !soundControls.contains(event.target)) {
                 volumeSliderContainer.classList.remove('active');
@@ -994,8 +721,6 @@
         });
 
         function updateSoundToggle() {
-            if (!bgVideo) return;
-            
             if (isMuted) {
                 soundToggle.classList.remove('unmuted');
                 soundToggle.classList.add('muted');
@@ -1009,8 +734,6 @@
         }
 
         function updateSoundIcon() {
-            if (!bgVideo) return;
-            
             const soundIcon = soundToggle.querySelector('.sound-icon');
             if (bgVideo.muted || bgVideo.volume === 0) {
                 soundIcon.textContent = '🔇';
@@ -1041,18 +764,13 @@
                 interactiveCard.classList.add('active');
                 soundControls.classList.add('active');
                 
-                // Запускаем видео
-                if (bgVideo) {
+                // Запускаем видео с задержкой для плавности
+                setTimeout(() => {
                     bgVideo.play().catch(e => {
-                        console.log('Ошибка воспроизведения:', e);
+                        console.log('Автовоспроизведение заблокировано:', e);
                         showPlayButton();
                     });
-                    
-                    // Скрываем загрузочный экран
-                    setTimeout(() => {
-                        loadingOverlay.classList.add('hidden');
-                    }, 1000);
-                }
+                }, 500);
             }, 300);
         }
 
@@ -1071,9 +789,7 @@
             playBtn.style.zIndex = '100';
             playBtn.style.backdropFilter = 'blur(10px)';
             playBtn.addEventListener('click', function() {
-                if (bgVideo) {
-                    bgVideo.play();
-                }
+                bgVideo.play();
                 playBtn.remove();
             });
             document.body.appendChild(playBtn);
@@ -1081,24 +797,107 @@
 
         gallopBtn.addEventListener('click', startWebsite);
 
-        // Остальной код без изменений...
-        // [Здесь остальной JavaScript код]
+        // Анимация при нажатии на Portfolio
+        portfolioBtn.addEventListener('click', function() {
+            portfolioBtn.classList.add('hidden');
+            originalName.classList.add('hidden');
+            
+            setTimeout(() => {
+                socialButtons.classList.add('active');
+            }, 500);
+        });
 
-        // Зацикливание видео
-        function setupVideoLoop() {
-            if (bgVideo) {
-                bgVideo.addEventListener('ended', function() {
-                    this.currentTime = 0;
-                    this.play();
+        // Обработчик для социальных кнопок
+        function selectSocialButton(clickedButton) {
+            if (currentActiveButton === clickedButton) {
+                resetSocialButtons();
+                return;
+            }
+
+            currentActiveButton = clickedButton;
+            const buttonType = clickedButton.dataset.type;
+            const buttons = socialButtons.querySelectorAll('.social-btn');
+            
+            buttons.forEach(button => {
+                if (button !== clickedButton) {
+                    button.classList.add('fade-out');
+                }
+            });
+
+            fillLinksContainer(buttonType);
+
+            setTimeout(() => {
+                clickedButton.classList.add('center-mode');
+                socialButtons.classList.add('single-mode');
+                setTimeout(() => linksContainer.classList.add('active'), 300);
+            }, 500);
+        }
+
+        function fillLinksContainer(buttonType) {
+            linksContainer.innerHTML = '';
+            const links = linkData[buttonType];
+            
+            if (links) {
+                links.forEach(linkInfo => {
+                    const linkItem = document.createElement('div');
+                    linkItem.className = 'link-item';
+                    linkItem.textContent = linkInfo.text;
+                    
+                    linkItem.addEventListener('click', function() {
+                        if (linkInfo.action === 'copy') {
+                            navigator.clipboard.writeText(linkInfo.link).then(() => {
+                                this.textContent = '✓ Скопировано!';
+                                setTimeout(() => {
+                                    this.textContent = linkInfo.text;
+                                }, 2000);
+                            });
+                        } else if (linkInfo.action === 'open') {
+                            window.open(linkInfo.link, '_blank');
+                        }
+                    });
+                    
+                    linksContainer.appendChild(linkItem);
                 });
             }
         }
 
+        function resetSocialButtons() {
+            const buttons = socialButtons.querySelectorAll('.social-btn');
+            linksContainer.classList.remove('active');
+            buttons.forEach(button => button.classList.remove('fade-out', 'center-mode'));
+            setTimeout(() => socialButtons.classList.remove('single-mode'), 300);
+            currentActiveButton = null;
+        }
+
+        // Назначаем обработчики для кнопок
+        document.querySelectorAll('.social-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                selectSocialButton(this);
+            });
+        });
+
+        // Эффект наклона
+        document.addEventListener('mousemove', (e) => {
+            const xAxis = (e.pageX - window.innerWidth / 2) / 25;
+            const yAxis = (e.pageY - window.innerHeight / 2) / 25;
+            interactiveCard.style.transform = `rotateY(${xAxis}deg) rotateX(${-yAxis}deg) scale(1.03)`;
+        });
+
+        interactiveCard.addEventListener('mouseleave', () => {
+            interactiveCard.style.transform = 'rotateY(0deg) rotateX(0deg) scale(1)';
+        });
+
+        // Гарантируем зацикливание видео
+        bgVideo.addEventListener('ended', function() {
+            console.log('Видео закончилось, перезапускаем...');
+            bgVideo.currentTime = 0;
+            bgVideo.play();
+        });
+
         // Обработка ошибок видео
-        function handleVideoError() {
+        bgVideo.addEventListener('error', function() {
             console.log('Ошибка загрузки видео, используем градиентный фон');
-            updateProgress(100, "Ошибка загрузки, используется градиентный фон");
-            
             videoBackground.innerHTML = '<div style="width:100%;height:100%;background:linear-gradient(45deg, #000, #330000, #000);background-size:400% 400%;animation:gradient 10s ease infinite;"></div>';
             
             const style = document.createElement('style');
@@ -1110,16 +909,6 @@
                 }
             `;
             document.head.appendChild(style);
-            
-            setTimeout(() => {
-                loadingOverlay.classList.add('hidden');
-                if (!websiteStarted) startWebsite();
-            }, 1000);
-        }
-
-        // Начинаем прогрессивную загрузку при загрузке страницы
-        document.addEventListener('DOMContentLoaded', function() {
-            loadVideoProgressive();
         });
 
         // Инициализация
